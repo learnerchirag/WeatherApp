@@ -1,10 +1,32 @@
-.day-card:hover, .day-card:active {
-  border:2px solid rgb(80, 187, 219) !important;
+.day-card:hover,
+.day-card:active {
+  border: 2px solid rgb(80, 187, 219) !important;
 }
-.css-yk16xz-control{
+.css-yk16xz-control {
   border: none !important;
 }
-@media only screen and (max-width:540px) {
+
+.daysTapsList::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.daysTapsList {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.chartContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.chartContainer {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@media only screen and (max-width: 540px) {
   /* .temp-chart{
     height: 100px !important;
     min-height: auto !important;
@@ -18,8 +40,6 @@
       min-height: auto !important;
   } */
 }
-
-
 
 /* .App {
   text-align: center;
