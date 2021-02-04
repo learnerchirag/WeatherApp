@@ -1,7 +1,29 @@
-.App {
-  text-align: center;
+.day-card:hover, .day-card:active {
+  border:2px solid rgb(80, 187, 219) !important;
+}
+.css-yk16xz-control{
+  border: none !important;
+}
+@media only screen and (max-width:540px) {
+  /* .temp-chart{
+    height: 100px !important;
+    min-height: auto !important;
+  }
+  #SvgjsG1008 {
+    height: 100px !important;
+    min-height: auto !important;
+  }
+  .apexcharts-canvas{
+      height: 100px !important;
+      min-height: auto !important;
+  } */
 }
 
+
+
+/* .App {
+  text-align: center;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -35,4 +57,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */

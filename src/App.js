@@ -1,9 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import Search from "./components/Search";
+import Weather from "./components/Weather";
 
 function App() {
   return (
     <div className="App">
+      {/* {navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position);
+      })}
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -17,7 +22,9 @@ function App() {
         >
           Learn React
         </a>
-      </header>
+      </header> */}
+      {/* <Search /> */}
+      <Weather />
     </div>
   );
 }
