@@ -12,7 +12,8 @@ import Clear from "../mycollection/png/Clear.png";
 import pin from "../mycollection/png/pin.png";
 import { Container } from "react-bootstrap";
 import moment from 'moment';
-
+import CustomSelect from "./CustomSelect";
+import { object } from "firebase-functions/lib/providers/storage";
 var d = new Date();
 export default class Weather extends Component {
   state = {
@@ -59,6 +60,34 @@ export default class Weather extends Component {
     },
     sunTimingChartOptions: {},
     sunTimingChartSeries: [],
+    cityOptions: [
+      {
+        value: "jaipur",
+        label: "Jaipur",
+      },
+      {
+        value: "delhi",
+        label: "Delhi",
+      },
+      {
+        value: "dehradun",
+        label: "Dehradun",
+      },
+      {
+        value: "mumbai",
+        label: "Mumbai",
+      },
+      {
+        value: "pune",
+        label: "Pune",
+      },
+      {
+        value: "banglore",
+        label: "Banglore",
+      },
+    ],
+    selectedCity: null,
+    customOption: null,
   };
 
   componentDidMount() {
@@ -72,6 +101,7 @@ export default class Weather extends Component {
           lon: position.coords.longitude,
         },
         () => {
+          this.selectOption();
           this.getWeatherData(this.state.lat, this.state.lon);
         }
       );
@@ -237,6 +267,37 @@ export default class Weather extends Component {
     });
     
   }
+  handleCitySelection = (customOption) => {
+    this.setState({
+      customOption,
+    });
+  };
+  selectOption = () => {
+    var customOption = [];
+    this.state.cityOptions.forEach((object) => {
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${object.value},IN&units=metric&appid=d6f853f1c69f1ec796e46f78f5b8ebee`
+        )
+        .then((data) => {
+          var weatherIcon = data.data.weather[0].main;
+          var temp = data.data.main.temp;
+          var cityObject = {
+            value: object.value,
+            label: (
+              <div className="label d-flex">
+                <span>{object.label}</span>
+                <img src={this.setIcon(weatherIcon)} alt="flag" />
+              </div>
+            ),
+          };
+          customOption.push(cityObject);
+        });
+    });
+    this.setState({
+      customOption,
+    });
+  };
   render() {
     return (
       <div>
@@ -254,7 +315,10 @@ export default class Weather extends Component {
                     </div>
                     <div style={{ width: "100%", outline: 'none' }}>
                       <Select
+                        isClearable
                         options={this.state.cityOptions}
+                        value={this.state.customOption}
+                        onChange={this.handleCitySelection}
                         placeholder="Select city"
                         style={{outline: 'none'}}
                       />
