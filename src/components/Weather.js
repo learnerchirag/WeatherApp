@@ -228,7 +228,7 @@ export default class Weather extends Component {
         discrete: [
           {
             seriesIndex: 0,
-            dataPointIndex: this.state.sunIndex,
+            dataPointIndex: 2,
             fillColor: "#e8ba56",
             strokeColor: "#fff",
             size: 12,
