@@ -189,27 +189,14 @@ export default class Weather extends Component {
     const sunsetTime = moment(
       new Date(this.state.daily[index].sunset * 1000)
     ).format("hh A");
+    // for (let i = 0; i < 15; i++) {
+    // }
+
     let sunTimingChartSeries = [
       {
         name: "Time",
         type: "area",
         data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
-      },
-      {
-        name: "Sun",
-        type: "scatter",
-        data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
-        // data: [
-        //   ["06 AM", -1],
-        //   ["08 AM", 1],
-        //   ["10 AM", 2],
-        //   ["12 PM", 3],
-        //   ["01 PM", 4],
-        //   ["02 PM", 3],
-        //   ["04 PM", 2],
-        //   ["06 PM", 1],
-        //   ["08 PM", -1],
-        // ],
       },
     ];
     let xAxisDataSeries = [
@@ -232,6 +219,21 @@ export default class Weather extends Component {
         toolbar: {
           show: false,
         },
+      },
+      markers: {
+        size: 1,
+        strokeWidth: 1,
+        colors: ["#e8ba56"],
+        strokeColors: "#e8ba56",
+        discrete: [
+          {
+            seriesIndex: 0,
+            dataPointIndex: this.state.sunIndex,
+            fillColor: "#e8ba56",
+            strokeColor: "#fff",
+            size: 12,
+          },
+        ],
       },
       dataLabels: {
         enabled: false,
@@ -257,9 +259,17 @@ export default class Weather extends Component {
         show: false,
       },
       xaxis: {
+        tickAmount: 3,
         categories: xAxisDataSeries,
       },
       fill: {
+        // type: ["gradient", "image"],
+        // opacity: [1, 1],
+        // image: {
+        //   src: [Clear],
+        //   width: 30,
+        //   height: 30,
+        // },
         colors: ["#e8ba56"],
       },
     };
@@ -271,6 +281,15 @@ export default class Weather extends Component {
       sunTimingLoaded: true,
     });
   };
+  // setInterval(function(){
+  //   var date = new Date();
+  //   const hr = parseInt(moment(date).format("H"));
+  //   if (hr > parseInt(this.state.sunriseTime) && hr < 18) {
+  //     var index= hr-6;
+  //     this.setState({sunIndex:index});
+  //   };
+  // },);
+
   handleCitySelection = (selectedCity) => {
     var lat;
     var lon;
@@ -324,6 +343,8 @@ export default class Weather extends Component {
     });
   };
   render() {
+    var date = new Date();
+    console.log(typeof moment(date).format("h"));
     return (
       <div>
         {this.state.dataLoaded ? (
