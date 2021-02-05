@@ -520,8 +520,8 @@ export default class Weather extends Component {
                   </Col>
                   
                 </Row>
-                <Row className="mt-3">
-                <Col sm={6} md={6} className="mt-3">
+                <Row className="mt-3 d-flex d-md-none">
+                <Col sm={6} className="mt-3">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
@@ -539,7 +539,7 @@ export default class Weather extends Component {
                       </p>
                     </Card>
                   </Col>
-                  <Col sm={6} md={6} className="mt-3">
+                  <Col sm={6} className="mt-3">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
