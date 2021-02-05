@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Row, Col, Card } from "react-bootstrap";
-// import { Chart } from "react-charts";
-// import { Line } from "react-chartjs-2";
-import Chart from "react-apexcharts";
 import Select from "react-select";
 import Clouds from "../mycollection/png/clouds.png";
 import Rain from "../mycollection/png/Rain.png";
