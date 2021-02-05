@@ -11,6 +11,7 @@ import pin from "../mycollection/png/pin.png";
 import { Container } from "react-bootstrap";
 import moment from "moment";
 import { Spinner } from "react-bootstrap";
+import Chart from 'react-apexcharts';
 var d = new Date();
 export default class Weather extends Component {
   state = {
@@ -191,23 +192,7 @@ export default class Weather extends Component {
         name: "Time",
         type: "area",
         data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
-      },
-      {
-        name: "Sun",
-        type: "scatter",
-        data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
-        // data: [
-        //   ["06 AM", -1],
-        //   ["08 AM", 1],
-        //   ["10 AM", 2],
-        //   ["12 PM", 3],
-        //   ["01 PM", 4],
-        //   ["02 PM", 3],
-        //   ["04 PM", 2],
-        //   ["06 PM", 1],
-        //   ["08 PM", -1],
-        // ],
-      },
+      }
     ];
     let xAxisDataSeries = [
       "06 AM",
@@ -243,6 +228,21 @@ export default class Weather extends Component {
           left: 20,
         },
       },
+      markers: {
+        size: 1,
+    strokeWidth: 1,
+    colors: ['#e8ba56'],
+    strokeColors: '#e8ba56',
+        discrete: [
+          {
+          seriesIndex: 0,
+          dataPointIndex: 7,
+          fillColor: '#e8ba56',
+          strokeColor: '#fff',
+          size: 12
+        }
+      ]
+      },  
       stroke: {
         curve: "smooth",
         lineCap: "round",
@@ -397,9 +397,9 @@ export default class Weather extends Component {
               <Card
                 className="shadow-sm rounded border-0 p-4"
                 style={{ borderRadius: "12px" }}
-              >
+                >
                 <Row className="chartContainer">
-                  <Col>
+                  <Col sm={12} md={2}>
                     <div className="d-flex align-items-start">
                       <h1
                         className="font-weight-bolder mr-3"
@@ -413,36 +413,8 @@ export default class Weather extends Component {
                         height="30"
                       ></img>
                     </div>
-                  </Col>
-                  <Col
-                    sm={12}
-                    md={8}
-                    className="overflow-scroll chartContainer w-100"
-                  >
-                    <div
-                      // className="temp-chart"
-                      className="chartContainer w-100"
-                      style={{
-                        overflowX: "scroll",
-                        overflowY: "hidden",
-                        zIndex: -10,
-                      }}
-                    >
-                      <div className="w-100 ml-2">
-                        <Chart
-                          // className="temp-chart"
-                          options={this.state.options}
-                          series={this.state.series}
-                          type="line"
-                          height="300"
-                          width="1100"
-                        />
-                      </div>
-                    </div>
-                  </Col>
-                </Row>
-                <Row className="mt-3">
-                  <Col>
+
+                    <Col className="p-0 mt-3 d-none d-md-block">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
@@ -460,7 +432,72 @@ export default class Weather extends Component {
                       </p>
                     </Card>
                   </Col>
-                  <Col>
+                  <Col className="p-0 mt-3 d-none d-md-block">
+                    <Card
+                      className="border-0 p-1 bg-light rounded shadow-sm"
+                      style={{
+                        textAlign: "left",
+                      }}
+                    >
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Humidity
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.current.humidity} %
+                      </p>
+                    </Card>
+                  </Col>
+                  </Col>
+                  
+                  <Col
+                    sm={12}
+                    md={10}
+                    className="overflow-scroll chartContainer w-100"
+                  >
+                    <div
+                      className="chartContainer w-100"
+                      style={{
+                        overflowX: "scroll",
+                        overflowY: "hidden",
+                        zIndex: -10,
+                      }}
+                    >
+                      <div className="w-100 ml-2">
+                        <Chart
+                          options={this.state.options}
+                          series={this.state.series}
+                          type="line"
+                          height="300"
+                          width="1100"
+                        />
+                      </div>
+                    </div>
+                  </Col>
+                  
+                </Row>
+                <Row className="mt-3">
+                <Col sm={6} md={6} className="mt-3">
+                    <Card
+                      className="border-0 p-1 bg-light rounded shadow-sm"
+                      style={{
+                        textAlign: "left",
+                      }}
+                    >
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Pressure
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.current.pressure} hpa
+                      </p>
+                    </Card>
+                  </Col>
+                  <Col sm={6} md={6} className="mt-3">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
