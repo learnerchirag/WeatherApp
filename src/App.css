@@ -25,7 +25,13 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-
+.css-g1d714-ValueContainer,
+.css-b8ldur-Input,
+.css-1pahdxg-control,
+.css-2b097c-container, .css-1f43avz-a11yText-A11yText, .select-custom {
+  outline: none !important;
+  border: none !important;
+}
 @media only screen and (max-width: 540px) {
   /* .temp-chart{
     height: 100px !important;
