@@ -7,13 +7,13 @@ import Chart from "react-apexcharts";
 import Select from "react-select";
 import Clouds from "../mycollection/png/clouds.png";
 import Rain from "../mycollection/png/Rain.png";
+import Mist from "../mycollection/png/Mist.png";
 import Haze from "../mycollection/png/Haze.png";
 import Clear from "../mycollection/png/Clear.png";
 import pin from "../mycollection/png/pin.png";
 import { Container } from "react-bootstrap";
-import moment from 'moment';
-import CustomSelect from "./CustomSelect";
-import { object } from "firebase-functions/lib/providers/storage";
+import moment from "moment";
+import { Spinner } from "react-bootstrap";
 var d = new Date();
 export default class Weather extends Component {
   state = {
@@ -26,40 +26,12 @@ export default class Weather extends Component {
     days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     dataLoaded: false,
     sunTimingLoaded: false,
-    chartCategories: [
-      "7am",
-      "8am",
-      "9am",
-      "10am",
-      "11am",
-      "12pm",
-      "1pm",
-      "2pm",
-      "3pm",
-      "4pm",
-      "5pm",
-      "6pm",
-      "7pm",
-      "8pm",
-      "9pm",
-      "10pm",
-      "11pm",
-      "12am",
-      "1am",
-      "2am",
-      "3am",
-      "4am",
-      "5am",
-      "6am",
-    ],
     options: {},
     series: [],
-    cityOptions: {
-      value: "chocolate",
-      label: "Jaipur",
-    },
     sunTimingChartOptions: {},
     sunTimingChartSeries: [],
+    sunriseTime: null,
+    sunsetTime: null,
     cityOptions: [
       {
         value: "jaipur",
@@ -82,8 +54,8 @@ export default class Weather extends Component {
         label: "Pune",
       },
       {
-        value: "banglore",
-        label: "Banglore",
+        value: "bangalore",
+        label: "Bangalore",
       },
     ],
     selectedCity: null,
@@ -141,12 +113,11 @@ export default class Weather extends Component {
     }
     let xAxisDataSeries = [];
     for (i; i < n; i++) {
-      
       const fetchedTemp = this.state.hourly[i].temp;
       const fetchedDate = new Date(this.state.hourly[i].dt * 1000);
-      console.log('fetched Date: ', fetchedDate);
-      const timeHour = moment(fetchedDate).format('hh A');
-      const xAxisData = [Math.round(fetchedTemp).toString() + '°', timeHour];
+      console.log("fetched Date: ", fetchedDate);
+      const timeHour = moment(fetchedDate).format("hh A");
+      const xAxisData = [Math.round(fetchedTemp).toString() + "°", timeHour];
       xAxisDataSeries.push(xAxisData);
       chartData.push(fetchedTemp);
     }
@@ -161,7 +132,7 @@ export default class Weather extends Component {
     var options = {
       chart: {
         id: "area",
-        height: 'auto',
+        height: "auto",
         // width: '100%',
         toolbar: {
           show: false,
@@ -174,21 +145,20 @@ export default class Weather extends Component {
         show: true,
         yaxis: {
           lines: {
-              show: false
-          }
-      }
+            show: false,
+          },
+        },
       },
       stroke: {
         curve: "smooth",
       },
-    
+
       yaxis: {
         show: false,
       },
       xaxis: {
         categories: xAxisDataSeries,
       },
-      
     };
     this.setState({
       series,
@@ -205,24 +175,58 @@ export default class Weather extends Component {
       return Rain;
     } else if (word === "Clear") {
       return Clear;
-    }
+    } else return Mist;
   };
 
   updateSunTimingChart = (index) => {
-    console.log(this.state.daily[index], new Date(this.state.daily[index].sunrise));
-    const sunriseTime = moment(new Date(this.state.daily[index].sunrise * 1000)).format('hh A');
-    const sunsetTime = moment(new Date(this.state.daily[index].sunset * 1000)).format('hh A');
+    console.log(
+      this.state.daily[index],
+      new Date(this.state.daily[index].sunrise)
+    );
+    const sunriseTime = moment(
+      new Date(this.state.daily[index].sunrise * 1000)
+    ).format("hh A");
+    const sunsetTime = moment(
+      new Date(this.state.daily[index].sunset * 1000)
+    ).format("hh A");
     let sunTimingChartSeries = [
       {
-        name: 'Time',
-        data: [0, 0.5, 0]
-      }
-    ]
-    let xAxisDataSeries = ['06 AM', '01 PM', '8 PM'];
+        name: "Time",
+        type: "area",
+        data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
+      },
+      {
+        name: "Sun",
+        type: "scatter",
+        data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
+        // data: [
+        //   ["06 AM", -1],
+        //   ["08 AM", 1],
+        //   ["10 AM", 2],
+        //   ["12 PM", 3],
+        //   ["01 PM", 4],
+        //   ["02 PM", 3],
+        //   ["04 PM", 2],
+        //   ["06 PM", 1],
+        //   ["08 PM", -1],
+        // ],
+      },
+    ];
+    let xAxisDataSeries = [
+      "06 AM",
+      "08 AM",
+      "10 AM",
+      "12 PM",
+      "01 PM",
+      "02 PM",
+      "04 PM",
+      "06 PM",
+      "08 PM",
+    ];
 
     let sunTimingChartOptions = {
       chart: {
-        id: "area",
+        // id: "area",
         height: 100,
         // width: '100%',
         toolbar: {
@@ -235,20 +239,20 @@ export default class Weather extends Component {
       grid: {
         yaxis: {
           lines: {
-            offsetX: -30
-          }
+            offsetX: -30,
+          },
         },
         padding: {
-          left: 20
-        }
+          left: 20,
+        },
       },
       stroke: {
         curve: "smooth",
-        lineCap: 'round',
-        colors: ['#e8ba56'],
-        width: 5
+        lineCap: "round",
+        colors: ["#e8ba56"],
+        width: 5,
       },
-    
+
       yaxis: {
         show: false,
       },
@@ -256,21 +260,36 @@ export default class Weather extends Component {
         categories: xAxisDataSeries,
       },
       fill: {
-        colors: ['#e8ba56']
-      }
-      
-    }
+        colors: ["#e8ba56"],
+      },
+    };
     this.setState({
       sunTimingChartSeries,
       sunTimingChartOptions,
+      sunriseTime,
+      sunsetTime,
       sunTimingLoaded: true,
     });
-    
-  }
-  handleCitySelection = (customOption) => {
-    this.setState({
-      customOption,
-    });
+  };
+  handleCitySelection = (selectedCity) => {
+    var lat;
+    var lon;
+    if (selectedCity) {
+      lat = selectedCity.coords.lat;
+      lon = selectedCity.coords.lon;
+    } else {
+      lat = this.state.lat;
+      lon = this.state.lon;
+    }
+    this.setState(
+      {
+        selectedCity,
+      },
+      () => {
+        this.selectOption();
+        this.getWeatherData(lat, lon);
+      }
+    );
   };
   selectOption = () => {
     var customOption = [];
@@ -280,16 +299,22 @@ export default class Weather extends Component {
           `https://api.openweathermap.org/data/2.5/weather?q=${object.value},IN&units=metric&appid=d6f853f1c69f1ec796e46f78f5b8ebee`
         )
         .then((data) => {
+          console.log("weather icon", data);
           var weatherIcon = data.data.weather[0].main;
           var temp = data.data.main.temp;
+          var coord = data.data.coord;
           var cityObject = {
             value: object.value,
             label: (
-              <div className="label d-flex">
-                <span>{object.label}</span>
-                <img src={this.setIcon(weatherIcon)} alt="flag" />
+              <div className="label d-flex justify-content-between align-items-center">
+                <span className="mr-1">{object.label}</span>
+                <span>
+                  {temp}°
+                  <img src={this.setIcon(weatherIcon)} alt="flag" />
+                </span>
               </div>
             ),
+            coords: coord,
           };
           customOption.push(cityObject);
         });
@@ -301,26 +326,34 @@ export default class Weather extends Component {
   render() {
     return (
       <div>
-        {this.state.dataLoaded && (
+        {this.state.dataLoaded ? (
           <div>
             <Container fluid className="py-2">
               <div>
-                <Card
-                  className="shadow-sm p-2"
-                  style={{ borderRadius: 15 }}
-                >
+                <Card className="shadow-sm p-2" style={{ borderRadius: 15 }}>
                   <div className="d-flex">
                     <div className="d-flex">
-                      <img className="my-auto" src={pin} style={{height: 20}} />
+                      <img
+                        className="my-auto"
+                        src={pin}
+                        style={{ height: 20 }}
+                      />
                     </div>
-                    <div style={{ width: "100%", outline: 'none' }}>
+                    <div
+                      style={{
+                        width: "100%",
+                        outline: "none",
+                        border: "none !important",
+                      }}
+                    >
                       <Select
                         isClearable
-                        options={this.state.cityOptions}
-                        value={this.state.customOption}
+                        className="select-custom"
+                        options={this.state.customOption}
+                        value={this.state.selectedCity}
                         onChange={this.handleCitySelection}
                         placeholder="Select city"
-                        style={{outline: 'none'}}
+                        style={{ outline: "none" }}
                       />
                     </div>
                   </div>
@@ -353,10 +386,12 @@ export default class Weather extends Component {
                       </div>
                       <img
                         className="p-1"
-                        style={{height: 30}}
+                        style={{ height: 30 }}
                         src={this.setIcon(this.state.daily[i].weather[0].main)}
                       />
-                      <small className="text-muted">{this.state.daily[i].weather[0].main}</small>
+                      <small className="text-muted">
+                        {this.state.daily[i].weather[0].main}
+                      </small>
                     </Card>
                   </Col>
                 ))}
@@ -369,21 +404,32 @@ export default class Weather extends Component {
                 <Row className="chartContainer">
                   <Col>
                     <div className="d-flex align-items-start">
-                      <h1 className="font-weight-bolder mr-3" style={{fontSize: 48}}>
+                      <h1
+                        className="font-weight-bolder mr-3"
+                        style={{ fontSize: 48 }}
+                      >
                         {this.state.current.temp}°C
                       </h1>
                       <img
-                      className="ml-1"
+                        className="ml-1"
                         src={this.setIcon(this.state.current.weather[0].main)}
                         height="30"
                       ></img>
                     </div>
                   </Col>
-                  <Col sm={12} className="overflow-scroll chartContainer w-100">
+                  <Col
+                    sm={12}
+                    md={8}
+                    className="overflow-scroll chartContainer w-100"
+                  >
                     <div
                       // className="temp-chart"
                       className="chartContainer w-100"
-                      style={{ overflowX: "scroll", overflowY: "hidden", zIndex: -10 }}
+                      style={{
+                        overflowX: "scroll",
+                        overflowY: "hidden",
+                        zIndex: -10,
+                      }}
                     >
                       <div className="w-100 ml-2">
                         <Chart
@@ -406,8 +452,15 @@ export default class Weather extends Component {
                         textAlign: "left",
                       }}
                     >
-                      <h6 style={{fontSize: 22}} className="font-weight-bolder">Pressure</h6>
-                      <p style={{fontSize: 20}} className="mb-0">{this.state.current.pressure} hpa</p>
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Pressure
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.current.pressure} hpa
+                      </p>
                     </Card>
                   </Col>
                   <Col>
@@ -417,27 +470,71 @@ export default class Weather extends Component {
                         textAlign: "left",
                       }}
                     >
-                      <h6 style={{fontSize: 22}} className="font-weight-bolder">Humidity</h6>
-                      <p style={{fontSize: 20}} className="mb-0">{this.state.current.humidity} %</p>
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Humidity
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.current.humidity} %
+                      </p>
                     </Card>
                   </Col>
                 </Row>
+                {this.state.sunTimingLoaded && (
+                  <Row className="mt-3">
+                    <Col className="px-0">
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Sunrise
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.sunriseTime}
+                      </p>
+                    </Col>
+                    <Col className="px-0" style={{ textAlign: "end" }}>
+                      <h6
+                        style={{ fontSize: 22 }}
+                        className="font-weight-bolder"
+                      >
+                        Sunset
+                      </h6>
+                      <p style={{ fontSize: 20 }} className="mb-0">
+                        {this.state.sunsetTime}
+                      </p>
+                    </Col>
+                  </Row>
+                )}
+
                 <Row>
                   <Col>
-                  {this.state.sunTimingLoaded && (
-                    <Chart
-                    options={this.state.sunTimingChartOptions}
-                    series={this.state.sunTimingChartSeries}
-                    type="area"
-                    height="130"
-                     />
-                  )}
-                      
+                    {this.state.sunTimingLoaded && (
+                      <Chart
+                        options={this.state.sunTimingChartOptions}
+                        series={this.state.sunTimingChartSeries}
+                        type="area"
+                        height="130"
+                      />
+                    )}
                   </Col>
                 </Row>
               </Card>
             </Container>
           </div>
+        ) : (
+          <Spinner
+            animation="grow"
+            variant="primary"
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "50%",
+              margin: "0 0 1rem 1rem",
+            }}
+          />
         )}
       </div>
     );
