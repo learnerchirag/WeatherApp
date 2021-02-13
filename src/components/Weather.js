@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { Row, Col, Card } from "react-bootstrap";
-// import { Chart } from "react-charts";
-// import { Line } from "react-chartjs-2";
-import Chart from "react-apexcharts";
 import Select from "react-select";
 import Clouds from "../mycollection/png/clouds.png";
 import Rain from "../mycollection/png/Rain.png";
@@ -14,6 +11,7 @@ import pin from "../mycollection/png/pin.png";
 import { Container } from "react-bootstrap";
 import moment from "moment";
 import { Spinner } from "react-bootstrap";
+import Chart from "react-apexcharts";
 var d = new Date();
 export default class Weather extends Component {
   state = {
@@ -60,6 +58,7 @@ export default class Weather extends Component {
     ],
     selectedCity: null,
     customOption: null,
+    sunIndex: null,
   };
 
   componentDidMount() {
@@ -85,12 +84,51 @@ export default class Weather extends Component {
         `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=metric&appid=d6f853f1c69f1ec796e46f78f5b8ebee`
       )
       .then((data) => {
+        const sunriseTime = moment(
+          new Date(data.data.current.sunrise * 1000)
+        ).format("hh A");
+        var sunIndex;
+        var date = new Date();
+        const hr = parseInt(moment(date).format("H"));
+        console.log(sunriseTime, hr);
+        if (hr > parseInt(sunriseTime.split(" ")[0]) && hr < 18) {
+          var index = hr - 6;
+          sunIndex = index;
+        } else {
+          sunIndex = null;
+        }
+
+        setInterval(() => {
+          if (hr > parseInt(sunriseTime.split(" ")[0]) && hr < 18) {
+            var index = hr - 6;
+            this.setState(
+              {
+                sunIndex: index,
+              },
+              () => {
+                console.log("interval fucntion running");
+                this.updateSunTimingChart(0);
+              }
+            );
+          } else {
+            this.setState(
+              {
+                sunIndex: null,
+              },
+              () => {
+                this.updateSunTimingChart(0);
+              }
+            );
+          }
+        }, 300000);
+
         this.setState(
           {
             current: data.data.current,
             hourly: data.data.hourly,
             daily: data.data.daily,
             // dataLoaded: true,
+            sunIndex,
           },
           () => {
             this.updateChart(0);
@@ -196,18 +234,24 @@ export default class Weather extends Component {
       {
         name: "Time",
         type: "area",
-        data: [-1, 1, 2, 3, 4, 3, 2, 1, -1],
+        data: [-1, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, -1],
       },
     ];
     let xAxisDataSeries = [
       "06 AM",
+      "07 AM",
       "08 AM",
+      "09 AM",
       "10 AM",
+      "11 AM",
       "12 PM",
       "01 PM",
       "02 PM",
+      "03 PM",
       "04 PM",
+      "05 PM",
       "06 PM",
+      "07 PM",
       "08 PM",
     ];
 
@@ -220,6 +264,19 @@ export default class Weather extends Component {
           show: false,
         },
       },
+      dataLabels: {
+        enabled: false,
+      },
+      grid: {
+        // yaxis: {
+        //   lines: {
+        //     offsetX: -30,
+        //   },
+        // },
+        padding: {
+          left: 20,
+        },
+      },
       markers: {
         size: 1,
         strokeWidth: 1,
@@ -228,25 +285,12 @@ export default class Weather extends Component {
         discrete: [
           {
             seriesIndex: 0,
-            dataPointIndex: 2,
+            dataPointIndex: this.state.sunIndex,
             fillColor: "#e8ba56",
             strokeColor: "#fff",
             size: 12,
           },
         ],
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      grid: {
-        yaxis: {
-          lines: {
-            offsetX: -30,
-          },
-        },
-        padding: {
-          left: 20,
-        },
       },
       stroke: {
         curve: "smooth",
@@ -259,18 +303,38 @@ export default class Weather extends Component {
         show: false,
       },
       xaxis: {
-        tickAmount: 3,
+        tickAmount: 7,
         categories: xAxisDataSeries,
       },
       fill: {
-        // type: ["gradient", "image"],
-        // opacity: [1, 1],
-        // image: {
-        //   src: [Clear],
-        //   width: 30,
-        //   height: 30,
-        // },
-        colors: ["#e8ba56"],
+        // colors: ["#e8ba56"],
+        type: "gradient",
+        gradient: {
+          type: "horizontal",
+          stops: [10, 90, 100],
+          colorStops: [
+            {
+              offset: 0,
+              color: "black",
+              opacity: 0.5,
+            },
+            {
+              offset: 10,
+              color: "#e8ba56",
+              opacity: 0.5,
+            },
+            {
+              offset: 90,
+              color: "#e8ba56",
+              opacity: 0.5,
+            },
+            {
+              offset: 100,
+              color: "black",
+              opacity: 0.5,
+            },
+          ],
+        },
       },
     };
     this.setState({
@@ -281,14 +345,6 @@ export default class Weather extends Component {
       sunTimingLoaded: true,
     });
   };
-  // setInterval(function(){
-  //   var date = new Date();
-  //   const hr = parseInt(moment(date).format("H"));
-  //   if (hr > parseInt(this.state.sunriseTime) && hr < 18) {
-  //     var index= hr-6;
-  //     this.setState({sunIndex:index});
-  //   };
-  // },);
 
   handleCitySelection = (selectedCity) => {
     var lat;
@@ -343,8 +399,6 @@ export default class Weather extends Component {
     });
   };
   render() {
-    var date = new Date();
-    console.log(typeof moment(date).format("h"));
     return (
       <div>
         {this.state.dataLoaded ? (
@@ -422,8 +476,8 @@ export default class Weather extends Component {
                 className="shadow-sm rounded border-0 p-4"
                 style={{ borderRadius: "12px" }}
               >
-                <Row className="chartContainer">
-                  <Col>
+                <Row className="chartContainer d-sm-none d-md-flex">
+                  <Col sm={12} md={2}>
                     <div className="d-flex align-items-start">
                       <h1
                         className="font-weight-bolder mr-3"
@@ -437,14 +491,51 @@ export default class Weather extends Component {
                         height="30"
                       ></img>
                     </div>
+
+                    <Col className="p-0 mt-3 d-none d-md-block">
+                      <Card
+                        className="border-0 p-1 bg-light rounded shadow-sm"
+                        style={{
+                          textAlign: "left",
+                        }}
+                      >
+                        <h6
+                          style={{ fontSize: 22 }}
+                          className="font-weight-bolder"
+                        >
+                          Pressure
+                        </h6>
+                        <p style={{ fontSize: 20 }} className="mb-0">
+                          {this.state.current.pressure} hpa
+                        </p>
+                      </Card>
+                    </Col>
+                    <Col className="p-0 mt-3 d-none d-md-block">
+                      <Card
+                        className="border-0 p-1 bg-light rounded shadow-sm"
+                        style={{
+                          textAlign: "left",
+                        }}
+                      >
+                        <h6
+                          style={{ fontSize: 22 }}
+                          className="font-weight-bolder"
+                        >
+                          Humidity
+                        </h6>
+                        <p style={{ fontSize: 20 }} className="mb-0">
+                          {this.state.current.humidity} %
+                        </p>
+                      </Card>
+                    </Col>
                   </Col>
+
                   <Col
                     sm={12}
-                    md={8}
+                    md={10}
                     className="overflow-scroll chartContainer w-100"
                   >
                     <div
-                      // className="temp-chart"
                       className="chartContainer w-100"
                       style={{
                         overflowX: "scroll",
@@ -454,7 +545,6 @@ export default class Weather extends Component {
                     >
                       <div className="w-100 ml-2">
                         <Chart
-                          // className="temp-chart"
                           options={this.state.options}
                           series={this.state.series}
                           type="line"
@@ -465,8 +555,8 @@ export default class Weather extends Component {
                     </div>
                   </Col>
                 </Row>
-                <Row className="mt-3">
-                  <Col>
+                <Row className="mt-3 d-sm-flex d-md-none">
+                  <Col className="mt-3">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
@@ -484,7 +574,7 @@ export default class Weather extends Component {
                       </p>
                     </Card>
                   </Col>
-                  <Col>
+                  <Col className="mt-3">
                     <Card
                       className="border-0 p-1 bg-light rounded shadow-sm"
                       style={{
@@ -537,7 +627,7 @@ export default class Weather extends Component {
                         options={this.state.sunTimingChartOptions}
                         series={this.state.sunTimingChartSeries}
                         type="area"
-                        height="130"
+                        height="170"
                       />
                     )}
                   </Col>
